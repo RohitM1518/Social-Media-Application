@@ -6,17 +6,17 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import { Post } from "../models/post.model.js"
 
 const getPostComments = asyncHandler(async (req, res) => {
-    const { postId } = req.params
+    const { postid } = req.params
     const { page = 1, limit = 10 } = req.query
 
-    if(!postId || !mongoose.isValidObjectId(postId)) throw new ApiError(400, "Invalid request to get comments")
+    if(!postid || !mongoose.isValidObjectId(postid)) throw new ApiError(400, "Invalid request to get comments")
     if(page < 1) throw new ApiError(400, "Invalid page number")
     if(limit < 1) throw new ApiError(400, "Invalid limit")
     const skip = (page - 1) * limit
 
     const pipeline = [{
         $match: {
-            post: new mongoose.Types.ObjectId(postId)
+            post: new mongoose.Types.ObjectId(postid)
         }
     },{
         $sort: {
@@ -43,7 +43,7 @@ const getPostComments = asyncHandler(async (req, res) => {
             owner: {
                 _id: 1,
                 fullname: 1,
-                avatar: 1
+                email: 1
             }
         }
     
@@ -56,18 +56,19 @@ const getPostComments = asyncHandler(async (req, res) => {
 })
 
 const addComment = asyncHandler(async (req, res) => {
-    const { postId } = req.params
-    if(!postId) throw new ApiError(400, "Invalid request to add comment")
+    const {postid}= req.params
+    console.log(postid)
+    if(!postid) throw new ApiError(400, "Invalid request to add comment")
     const { content } = req.body
     if(!content || typeof content !== 'string') throw new ApiError(400, "Content is required to add a comment")
 
-    const video = await Post.findById(postId)
+    const video = await Post.findById(postid)
 
     if(!video) throw new ApiError(404, "Video not found")
 
     const comment = await Comment.create({
         content,
-        video: postId,
+        post: postid,
         owner: req.user._id
     })
     if(!comment) throw new ApiError(500, "Something went wrong while adding the comment")
@@ -75,22 +76,22 @@ const addComment = asyncHandler(async (req, res) => {
 })
 
 const updateComment = asyncHandler(async (req, res) => {
-    const { commentId } = req.params
-    if(!commentId) throw new ApiError(400, "Invalid request to update a comment")
+    const { commentid } = req.params
+    if(!commentid) throw new ApiError(400, "Invalid request to update a comment")
     const { content } = req.body
     if(!content || typeof content !== 'string') throw new ApiError(400, "Content is required to add a comment")
-    const updatedComment = await Comment.findByIdAndUpdate(commentId,{
+    const updatedComment = await Comment.findByIdAndUpdate(commentid,{
         content
-    },{new:true}).populate('owner','username avatar').populate('video','title')
+    },{new:true}).populate('owner','username email').populate('post','content')
     if(!updatedComment) throw new ApiError(500, "Something went wrong while adding the comment")
     return res.status(201).json(new ApiResponse(201, updatedComment, "Comment is updated successfully"))
 
 })
 
 const deleteComment = asyncHandler(async (req, res) => {
-    const { commentId } = req.params
-    if(!commentId) throw new ApiError(400, "Invalid request to delete a comment")
-    const deletedComment = await Comment.findByIdAndDelete(commentId)
+    const { commentid } = req.params
+    if(!commentid) throw new ApiError(400, "Invalid request to delete a comment")
+    const deletedComment = await Comment.findByIdAndDelete(commentid)
     if(!deletedComment) throw new ApiError(500, "Something went wrong while deleting the comment")
     return res.status(200).json(new ApiResponse(200, deletedComment, "Comment is deleted successfully"))
 })

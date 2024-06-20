@@ -13,11 +13,6 @@ const getAllPosts = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, sortBy = "createdAt", sortType = "asc" } = req.query
     let pipeline = [
         {
-            $match: {
-                isPublished: true
-            }
-        },
-        {
             $sort: {
                 [sortBy]: sortType === 'desc' ? -1 : 1
             }
@@ -38,9 +33,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
                     {
                         $project: {
                             username: 1,
-                            fullname: 1,
-                            avatar: 1,
-                            coverImage: 1,
+                            email: 1,
                         }
                     }
                 ]
@@ -60,7 +53,7 @@ const publishAPost = asyncHandler(async (req, res) => {
     const { content } = req.body
     if (!content) throw new ApiError(400, "Content is required ")
     const PostfileLocalpath = req.files?.PostFile[0]?.path
-    if (!PostfileLocalpath && !thumbnailLocalpath) throw new ApiError(422, 'No file uploaded')
+    if (!PostfileLocalpath) throw new ApiError(422, 'No file uploaded')
 
     const PostfileURL = await uploadOnCloudinary(PostfileLocalpath)
     //console.log("Post File URL",PostfileURL)
@@ -84,44 +77,48 @@ const publishAPost = asyncHandler(async (req, res) => {
 })
 
 const getPostById = asyncHandler(async (req, res) => {
-    const { PostId } = req.params
-    console.log("Post ID", PostId)
-    if (!PostId) throw new ApiError(400, "Post id is required")
-    if (!mongoose.isValidObjectId(PostId)) {
+    const { postid } = req.params
+    // console.log("Post ID", postid)
+    if (!postid) throw new ApiError(400, "Post id is required")
+    if (!mongoose.isValidObjectId(postid)) {
         throw new ApiError(400, "Invalid Post id")
     }
-    const Post = await Post.findOne({ _id: new mongoose.Types.ObjectId(PostId)}).populate('owner', 'username email avatar')
+    const post = await Post.findOne({ _id: new mongoose.Types.ObjectId(postid) }).populate('owner', 'username email avatar')
     // console.log("Post", Post)
 
-    if (!Post) {
+    if (!post) {
         throw new ApiError(404, "Post not found")
     }
-    await Post.save()
+    await post.save()
     return res
         .status(200)
-        .json(new ApiResponse(200, { Post }, "Post found successfully"))
+        .json(new ApiResponse(200, { post }, "Post found successfully"))
 
 })
 
 const updatePost = asyncHandler(async (req, res) => {
-    const { PostId } = req.params
+    const { postid } = req.params
     const { content } = req.body
-    //console.log("Post ID", PostId,"title",title,"description",description)
-    if (!content) throw new ApiError(400, "Content is required ")
-    if (!PostId) throw new ApiError(400, "Post id is required")
-    if (!mongoose.isValidObjectId(PostId)) {
+    //console.log("Post ID", postid,"title",title,"description",description)
+    if (!postid) throw new ApiError(400, "Post id is required")
+    if (!mongoose.isValidObjectId(postid)) {
         throw new ApiError(400, "Invalid Post id")
     }
-
-    const postLocalpath = req.files?.thumbnail[0]?.path
-    if (!postLocalpath) throw new ApiError(400, "Thumbnail is required")
-
-    const post = await uploadOnCloudinary(thumbnailLocalpath);
-    if (!post) throw new ApiError(503, "Failed to upload thumbnail")
-
-    const updatedPost = await Post.findOneAndUpdate({ _id: PostId, owner: req.user._id }, {
-        title,
-        description,
+    console.log("HI")
+    let post;
+    const PostFile =req.files?.PostFile
+    let postLocalpath;
+    if(PostFile){
+        postLocalpath = req.files?.PostFile[0]?.path
+    }
+    if (!postLocalpath && !content) throw new ApiError(400, "Post File or content is required")
+    // console.log("HI")
+    if (postLocalpath) {
+         post = await uploadOnCloudinary(postLocalpath);
+        if (!post) throw new ApiError(503, "Failed to upload thumbnail")
+    }
+    const updatedPost = await Post.findOneAndUpdate({ _id: postid, owner: req.user._id }, {
+        content,
         file: post?.url
     }, { new: true }).populate('owner', 'username email')
     //console.log("Updated Post", updatedPost)
@@ -135,18 +132,18 @@ const updatePost = asyncHandler(async (req, res) => {
 })
 
 const deletePost = asyncHandler(async (req, res) => {
-    const { PostId } = req.params
-    if (!PostId) throw new ApiError(400, "Post id is required")
-    if (!mongoose.isValidObjectId(PostId)) {
+    const { postid } = req.params
+    if (!postid) throw new ApiError(400, "Post id is required")
+    if (!mongoose.isValidObjectId(postid)) {
         throw new ApiError(400, "Invalid Post id")
     }
-    const Post = await Post.findOneAndDelete({ _id: PostId, owner: req.user._id })
+    const post = await Post.findOneAndDelete({ _id: postid, owner: req.user._id })
 
-    res.status(200).json(new ApiResponse(200, { data: Post }, "Post deleted successfully"))
+    res.status(200).json(new ApiResponse(200, { data: post }, "Post deleted successfully"))
 })
 
 
-const getAllpostsByUserID = asyncHandler(async (req, res) => {
+const getAllPostsByUserID = asyncHandler(async (req, res) => {
     const { userId } = req.params
     if (!userId) throw new ApiError(400, "User id is required")
     if (!mongoose.isValidObjectId(userId)) {
@@ -167,6 +164,6 @@ export {
     getPostById,
     updatePost,
     deletePost,
-    getAllpostsByUserID,
+    getAllPostsByUserID,
     getAllPosts
 }

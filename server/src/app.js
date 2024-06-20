@@ -18,5 +18,14 @@ app.use(express.static("public"))//This is to store some data which can be acces
 //public folder is already created so we are passing public
 app.use(cookieParser())
 
+import userRoute from './routes/user.route.js'
+import commentRoute from './routes/comment.route.js'
+import likeRoute from './routes/like.route.js'
+import postRoute from './routes/post.route.js'
+
+app.use('/user',userRoute)
+app.use('/comment',commentRoute)
+app.use('/like',likeRoute)
+app.use('/post',postRoute)
 
 export {app}
