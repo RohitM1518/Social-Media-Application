@@ -8,11 +8,11 @@ function App() {
     <div className=''>
     
     <Header />
-    
     <div className='w-full h-36'>
     </div>
-  
+  <div className=' container'>
     <Outlet />
+    </div>
     
     <Footer />
     </div>

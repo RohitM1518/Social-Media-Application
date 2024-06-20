@@ -36,27 +36,27 @@ const Header = () => {
     }, [mobileMenuRef]);
     return (
         <div className='fixed w-full bg-white shadow-md z-10'>
-            <div className='container mx-auto flex justify-between items-center px-4'>
+            <div className=' mx-auto flex justify-between items-center px-4'>
                 <div className=' flex items-baseline justify-between w-full'>
                     <div className=''>
                         <Logo />
                     </div>
-                    <ul className={`hidden lg:flex space-x-6 ${isMobileMenuOpen ? 'hidden' : ''}`}>
+                    <div className={`hidden lg:flex space-x-6 ${isMobileMenuOpen ? 'hidden' : ''}`}>
                         {linkItems.map((item) => (
-                            <li key={item.name} className='transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 '>
+                            <div key={item.name} className='transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 '>
                                 <NavLink
                                     to={item.link}
-                                    className={({ isActive }) => `text-black opacity-70 hover:text-emerald-600 ${isActive ? 'text-emerald-600' : ''}`}
+                                    className={({ isActive }) => `text-black opacity-70 font-mono hover:text-emerald-600 ${isActive ? 'text-emerald-600' : ''}`}
                                    // activeClassName='text-emerald-600 opacity-95'
                                 >
                                     {item.name}
                                 </NavLink>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                     <div className='flex'>
-                        <Button>Sign In</Button>
-                        <Button>Sign Up</Button>
+                        <Button url='/signin'>Sign In</Button>
+                        <Button url='/signup'>Sign Up</Button>
                     </div>
                 </div>
                 {/* Display the mobile menu button on smaller screens */}
