@@ -2,6 +2,7 @@ import React, { useState,useRef,useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 // import r1 from '../assets/r1.png'
 import Logo from './Logo'
+import {Button}  from '.';
 
 const Header = () => {
     const linkItems = [
@@ -35,14 +36,11 @@ const Header = () => {
     }, [mobileMenuRef]);
     return (
         <div className='fixed w-full bg-white shadow-md z-10'>
-            <div className='container mx-auto flex justify-between items-center p-4'>
-                <div className='flex items-center'>
-                    <div className=' mr-80'>
-                        {/* <h1 className='text-4xl font-bold font-mono text-black transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 cursor-pointer'>R</h1> */}
-                        {/* <img src={r1} width={40} height={40}/> */}
+            <div className='container mx-auto flex justify-between items-center px-4'>
+                <div className=' flex items-baseline justify-between w-full'>
+                    <div className=''>
                         <Logo />
                     </div>
-                    {/* Hide the navigation menu on larger screens */}
                     <ul className={`hidden lg:flex space-x-6 ${isMobileMenuOpen ? 'hidden' : ''}`}>
                         {linkItems.map((item) => (
                             <li key={item.name} className='transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 '>
@@ -56,6 +54,10 @@ const Header = () => {
                             </li>
                         ))}
                     </ul>
+                    <div className='flex'>
+                        <Button>Sign In</Button>
+                        <Button>Sign Up</Button>
+                    </div>
                 </div>
                 {/* Display the mobile menu button on smaller screens */}
                 <div className='lg:hidden'>

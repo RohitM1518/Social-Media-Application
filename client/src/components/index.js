@@ -3,7 +3,7 @@ import Header from './Header'
 import Footer from './Footer'
 import Input from './Input'
 import Logo from './Logo'
-import Button from './Button'
+import {Button} from './Button'
 
 export{
     AuthLayout,

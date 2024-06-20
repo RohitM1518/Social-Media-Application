@@ -1,16 +1,21 @@
 import { Outlet } from 'react-router-dom'
-import './App.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 
 function App() {
 
   return (
-   <div>
+    <div className=''>
+    
     <Header />
+    
+    <div className='w-full h-36'>
+    </div>
+  
     <Outlet />
+    
     <Footer />
-   </div>
+    </div>
   )
 }
 

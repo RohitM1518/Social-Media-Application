@@ -1,18 +1,17 @@
 import React from 'react'
-import Button from '@mui/material/Button';
+import {useNavigate } from 'react-router-dom'
 
-
-const ButtonComp = ({text,style, imgPath, imgWidth=25, imgHeight=25,fullStyle='',type="submit"}) => {
+export const Button = ({children,url,className=''}) => {
+    const navigate = useNavigate();
+    const clickHandle=()=>{
+        navigate(url);
+    }
   return (
-    <>
-    <Button className={`${style} flex  border border-white w-full gap-3 justify-center items-baseline max-w-auto`}
-    variant='outlined' 
-    type={type}
-    color='primary'>
-    {imgPath && <img src={imgPath} alt="" height={imgHeight} width={imgWidth} className='' />}
-    {text}</Button>
-    </>
+    <div className='m-2 mt-5'>
+        <button 
+        className={`bg-black text-white p-2 rounded-md ${className} transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300`}
+        onClick={clickHandle}
+        >{children}</button>
+    </div>
   )
 }
-
-export default ButtonComp
