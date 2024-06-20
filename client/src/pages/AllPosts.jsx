@@ -31,12 +31,12 @@ const AllPosts = () => {
     )
   }
   return (
-    <div className='grid grid-cols-4 gap-4'>
-      <div className='col-span-1  p-4'></div>
+    <div className='grid grid-cols-4 gap-4 max-sm:flex max-sm:flex-col-reverse'>
+      <div className='col-span-1  p-4 max-lg:hidden'></div>
       <div className='col-span-2 p-4 justify-center'>
       <Posts posts={posts}/>
       </div>
-      <div className='col-span-1 p-4 fixed right-10 top-20 h-full overflow-y-auto'>
+      <div className='col-span-1 p-4 lg:fixed right-10 top-20 h-full overflow-y-auto max-sm:px-5'>
       <NewPost />
       </div>
     </div>

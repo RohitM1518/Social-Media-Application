@@ -7,6 +7,7 @@ import { useSelector,useDispatch } from 'react-redux';
 import axios from 'axios';
 import { logout } from '../redux/useSlice';
 import { errorParser } from '../utils/errorParser';
+import { useResponseContext } from '../contexts/ResponseContext';
 
 
 const Header = () => {
@@ -14,7 +15,7 @@ const Header = () => {
     const accessToken = useSelector(state => state?.user?.accessToken)
     // console.log(user)
     const backendURL = import.meta.env.VITE_BACKEND_URL
-
+    const {setResponse}=useResponseContext()
     const [linkItems,setLinkItems]=useState([])
     const dispatch = useDispatch()
     useEffect(()=>{
@@ -41,12 +42,13 @@ const Header = () => {
 
     const handleLogout =async()=>{
         try {
-            await axios.delete(`${backendURL}/user/`,{
+            const res=await axios.delete(`${backendURL}/user/`,{
                 withCredentials:true,
                 headers:{
                     'Authorization':`Bearer ${accessToken}`
                 }
             })
+            setResponse(res.data.message)
             dispatch(logout())
         } catch (error) {
             const errorMsg = errorParser(error)

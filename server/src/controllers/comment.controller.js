@@ -42,7 +42,7 @@ const getPostComments = asyncHandler(async (req, res) => {
             createdAt: 1,
             owner: {
                 _id: 1,
-                fullname: 1,
+                username: 1,
                 email: 1
             }
         }
@@ -50,7 +50,6 @@ const getPostComments = asyncHandler(async (req, res) => {
     }]
     const comments = await Comment.aggregate(pipeline)
     if(!comments) throw new ApiError(500, "Something went wrong while fetching comments")
-    if(comments.length === 0) throw new ApiError(404, "No comments found")
     res.status(200).json(new ApiResponse(200, comments, "Comments are fetched successfully"))
 
 })

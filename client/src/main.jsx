@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import store from './redux/store.js'
 import { AuthLayout } from './components/index.js'
 import {SignUp,SignIn,Home, AllPosts, Profile} from './pages/index.js'
+import { ResponseContextProvider } from './contexts/ResponseContext.jsx'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -55,7 +56,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
+      <ResponseContextProvider>
     <RouterProvider router={router} />
+    </ResponseContextProvider>
     </Provider>
   </React.StrictMode>,
 )

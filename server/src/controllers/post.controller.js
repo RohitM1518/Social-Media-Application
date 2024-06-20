@@ -68,7 +68,7 @@ const publishAPost = asyncHandler(async (req, res) => {
         file: PostfileURL?.url || '',
         owner: req.user._id,
         content: content,
-        format: PostfileURL.format || ''
+        format: PostfileURL?.format || ''
     }
     )
 

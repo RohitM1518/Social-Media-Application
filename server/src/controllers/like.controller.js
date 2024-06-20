@@ -99,7 +99,22 @@ if(!likedposts) throw new ApiError(500, "Something went wrong while fetching lik
 res.status(200).json(new ApiResponse(200, likedposts, "Liked posts are fetched successfully"))
 })
 
+const isPostLiked = asyncHandler(async(req,res)=>{
+    const {postid} = req.params
+    if(!postid || !isValidObjectId(postid)){
+        throw new ApiError(400,"Invalid request to get like status")
+    }
+    const like = await Like.findOne({likedBy:req.user._id, post:new mongoose.Types.ObjectId(postid)})
+    if(like){
+        return res.status(200).json(new ApiResponse(200, true, "Post is liked by user"))
+    }
+    else{
+        return res.status(200).json(new ApiResponse(200, false, "Post is not liked by user"))
+    }
+})
+
 export {
     togglePostLike,
-    getLikedPosts
+    getLikedPosts,
+    isPostLiked
 }
