@@ -8,6 +8,7 @@ import store from './redux/store.js'
 import { AuthLayout } from './components/index.js'
 import {SignUp,SignIn,Home, AllPosts, Profile} from './pages/index.js'
 import { ResponseContextProvider } from './contexts/ResponseContext.jsx'
+import { ErrorContextProvider } from './contexts/ErrorContext.jsx'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -57,7 +58,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
       <ResponseContextProvider>
+      <ErrorContextProvider>
     <RouterProvider router={router} />
+    </ErrorContextProvider>
     </ResponseContextProvider>
     </Provider>
   </React.StrictMode>,

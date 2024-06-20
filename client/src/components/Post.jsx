@@ -8,6 +8,9 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Comments from './Comments';
 import { FaRegHeart } from "react-icons/fa6";
+import { useErrorContext } from '../contexts/ErrorContext';
+import { useResponseContext } from '../contexts/ResponseContext';
+import { errorParser } from '../utils/errorParser';
 
 
 const Post = ({ post }) => {
@@ -15,6 +18,8 @@ const Post = ({ post }) => {
     const accessToken = useSelector(state => state.user?.accessToken)
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState('')
+    const {setError}= useErrorContext()
+    const {setResponse}=useResponseContext()
     const [logic,setLogic]=useState('')
     const [isLiked,setIsLiked]=useState(false)
     const postComment = async () => {
@@ -26,22 +31,27 @@ const Post = ({ post }) => {
                     'Authorization': `Bearer ${accessToken}`
                 }
             })
+            setResponse(res.data.message)
             console.log(res.data.data)            
         } catch (error) {
+            setError(errorParser(error))
             console.log(error)
         }
     }
     const toggleLike = async () => {
         try {
-            setIsLiked(prev => !prev)
+            
             const res = await axios.post(`${backendURL}/like/${post._id}`,{}, {
                 withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
                 }
             })
+            setIsLiked(prev => !prev)
+            // setResponse(res.data.message)
             console.log(res.data.data)            
         } catch (error) {
+            setError(errorParser(error))
             console.log(error)
         }
     }
@@ -54,15 +64,18 @@ const Post = ({ post }) => {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 })
+                // setResponse(res.data.message)
                 const res1 = await axios.get(`${backendURL}/like/${post._id}`, {
                     withCredentials: true,
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 })
+                // setResponse(res.data.message)
                 console.log(res1.data.data)
                 setComments(res.data.data)
             } catch (error) {
+                setError(errorParser(error))
                 console.log(error)
             }
         }

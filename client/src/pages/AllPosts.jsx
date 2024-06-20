@@ -3,10 +3,15 @@ import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import Posts from '../components/Posts'
 import { NewPost } from '../components'
+import { useErrorContext } from '../contexts/ErrorContext'
+import { useResponseContext } from '../contexts/ResponseContext'
+import { errorParser } from '../utils/errorParser'
 const AllPosts = () => {
   const accessToken = useSelector(state=>state.user.accessToken)
   const backendURL = import.meta.env.VITE_BACKEND_URL
   const [posts,setPosts]= useState([])
+  const {setError} = useErrorContext()
+  const {setResponse}=useResponseContext()
     useEffect(()=>{
       async function getPosts(){
         try {
@@ -16,10 +21,12 @@ const AllPosts = () => {
                 'Authorization':`Bearer ${accessToken}`
               }
             })
+            // setResponse(res.data.message)
             console.log(res.data.data.posts)
             setPosts(res.data.data.posts)
         } catch (error) {
             console.log(error)
+            setError(errorParser(error))
         }
     }
     getPosts()

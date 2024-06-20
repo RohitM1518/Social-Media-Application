@@ -2,10 +2,15 @@ import React, { useState } from 'react'
 import { Button } from './Button'
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { useErrorContext } from '../contexts/ErrorContext';
+import { useResponseContext } from '../contexts/ResponseContext';
+import { errorParser } from '../utils/errorParser';
 
 const NewPost = () => {
     const [content,setContent]= useState('')
     const [selectedFile, setSelectedFile] = useState(null);
+    const {setError}= useErrorContext()
+    const {setResponse}=useResponseContext()
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const accessToken = useSelector(state=>state.user?.accessToken)
     const createPost = async()=>{
@@ -19,8 +24,11 @@ const NewPost = () => {
                     'Authorization':`Bearer ${accessToken}`
                 }
             })
+            setResponse(res.data.message)
             console.log("Success")
         } catch (error) {
+            const errorMSg = errorParser(error)
+            setError(errorMSg)
             console.log(error)
         }
     }

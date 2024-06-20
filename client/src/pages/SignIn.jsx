@@ -5,8 +5,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { loginFailure, loginStart, loginSuccess } from '../redux/useSlice.js';
-import { signInWithPopup } from 'firebase/auth';
+import { loginStart, loginSuccess } from '../redux/useSlice.js';
 import { errorParser } from '../utils/errorParser.js';
 const SignIn = () => {
     const navigate = useNavigate()

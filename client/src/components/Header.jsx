@@ -8,6 +8,7 @@ import axios from 'axios';
 import { logout } from '../redux/useSlice';
 import { errorParser } from '../utils/errorParser';
 import { useResponseContext } from '../contexts/ResponseContext';
+import { useErrorContext } from '../contexts/ErrorContext';
 
 
 const Header = () => {
@@ -16,6 +17,7 @@ const Header = () => {
     // console.log(user)
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const {setResponse}=useResponseContext()
+    const {setError}= useErrorContext()
     const [linkItems,setLinkItems]=useState([])
     const dispatch = useDispatch()
     useEffect(()=>{
@@ -53,6 +55,7 @@ const Header = () => {
         } catch (error) {
             const errorMsg = errorParser(error)
             console.log(error)
+            setError(errorMsg)
         }
     }
     useEffect(() => {
