@@ -4,7 +4,7 @@ import Post from './Post'
 const Posts = ({posts}) => {
     console.log("Posts",posts)
   return (
-    <div className=' w-full'>
+    <div className='flex justify-center flex-col'>
         {
         posts &&
         posts.map((post)=>(
