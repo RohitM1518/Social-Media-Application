@@ -12,7 +12,7 @@ export default function Protected({ children, authentication = true }) {
 
   useEffect(() => {
     if (authentication && authStatus !== authentication) {
-      navigate("/login")
+      navigate("/signin")
     }
 
     setLoader(false)

@@ -3,20 +3,28 @@ import { NavLink } from 'react-router-dom';
 // import r1 from '../assets/r1.png'
 import Logo from './Logo'
 import {Button}  from '.';
-import { useSelector } from 'react-redux';
-import { UserContextProvider, useUserContext } from '../contexts/userContext';
+import { useSelector,useDispatch } from 'react-redux';
+import axios from 'axios';
+import { logout } from '../redux/useSlice';
+import { errorParser } from '../utils/errorParser';
+
 
 const Header = () => {
-    const {user} = useUserContext()
-    let linkItems=[]
+    const user = useSelector(state => state?.user?.currentUser)
+    const accessToken = useSelector(state => state?.user?.accessToken)
+    // console.log(user)
+    const backendURL = import.meta.env.VITE_BACKEND_URL
+
+    const [linkItems,setLinkItems]=useState([])
+    const dispatch = useDispatch()
     useEffect(()=>{
         if(user){
-            linkItems = [
+            const temp = [
                 { name: 'Home', link: '/' },
                 { name: 'Posts', link: '/posts' },
                 { name: 'Profile', link: '/profile' },
             ];
-            console.log(linkItems)
+            setLinkItems(temp)
         }
     },[user])
     
@@ -31,6 +39,20 @@ const Header = () => {
 
     const mobileMenuRef = useRef(null);
 
+    const handleLogout =async()=>{
+        try {
+            await axios.delete(`${backendURL}/user/`,{
+                withCredentials:true,
+                headers:{
+                    'Authorization':`Bearer ${accessToken}`
+                }
+            })
+            dispatch(logout())
+        } catch (error) {
+            const errorMsg = errorParser(error)
+            console.log(error)
+        }
+    }
     useEffect(() => {
         const handleOutsideClick = (event) => {
             if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
@@ -51,7 +73,7 @@ const Header = () => {
                     <div className=''>
                         <Logo />
                     </div>
-                    <div className={`hidden lg:flex space-x-6 ${isMobileMenuOpen ? 'hidden' : ''}`}>
+                    <div className={`hidden lg:flex space-x-6 py-4 ${isMobileMenuOpen ? 'hidden' : ''}`}>
                         {linkItems.map((item) => (
                             <div key={item.name} className='transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 '>
                                 <NavLink
@@ -68,6 +90,13 @@ const Header = () => {
                         <Button url='/signin' style='bg-white text-black border-black border'>Sign In</Button>
                         <Button url='/signup'>Sign Up</Button>
                     </div>}
+                    {
+                        user && <div onClick={handleLogout}  className=' max-lg:hidden'>
+                            {/* <h4 className=' font-mono font-bold'>{user?.username}</h4>
+                             */}
+                             <Button style=' bg-white text-black border-black border'>Logout</Button>
+                        </div>
+                    }
                 </div>
                 {/* Display the mobile menu button on smaller screens */}
                 <div className='lg:hidden'>
@@ -91,10 +120,15 @@ const Header = () => {
                                     </NavLink>
                                 </li>
                             ))}
-                            <div className='flex'>
+                          {!user &&  <div className='flex'>
                         <Button url='/signin' style='bg-white text-black border-black border'>Sign In</Button>
                         <Button url='/signup'>Sign Up</Button>
-                    </div>
+                    </div>}
+                    {
+                        user && <div>
+                            <Button style=' bg-white text-black border-black border'>Logout</Button>
+                        </div>
+                    }
                         </ul>
                         
                     </div>

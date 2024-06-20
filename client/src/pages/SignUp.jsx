@@ -12,6 +12,8 @@ const SignUp = () => {
     const { register, handleSubmit } = useForm()
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    const backendURL = import.meta.env.VITE_BACKEND_URL
+
 
     const create = async (data,event) => {
         event.preventDefault();
@@ -28,7 +30,7 @@ const SignUp = () => {
             formData.append("email", data.email);
             formData.append("password", data.password);
 
-            const res = await axios.post('http://localhost:8000/api/v1/users/register',formData)
+            const res = await axios.post(`${backendURL}/users/register`,formData)
             sessionStorage.setItem('refreshToken',res.data.data.refreshToken)
             dispatch(loginSuccess(res.data.data))
             navigate("/")
@@ -99,7 +101,9 @@ const SignUp = () => {
                                 required: true,
                             })}
                         />
+                        <div onClick={create}>
                         <Button style='w-full bg-black text-white'> Sign Up</Button>
+                        </div>
                     </div>
                 </form>
             </div>

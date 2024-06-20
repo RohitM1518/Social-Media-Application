@@ -2,7 +2,7 @@ import mongoose, { isValidObjectId } from "mongoose"
 import { Post } from "../models/post.model.js"
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { asyncHandler } from "../utils/AsyncHandler.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { User } from "../models/user.model.js"
 import jwt from "jsonwebtoken"
@@ -28,7 +28,7 @@ const getAllPosts = asyncHandler(async (req, res) => {
                 from: "users",
                 localField: "owner",
                 foreignField: "_id",
-                as: "users",
+                as: "owner",
                 pipeline: [
                     {
                         $project: {
@@ -51,20 +51,24 @@ const getAllPosts = asyncHandler(async (req, res) => {
 
 const publishAPost = asyncHandler(async (req, res) => {
     const { content } = req.body
-    if (!content) throw new ApiError(400, "Content is required ")
-    const PostfileLocalpath = req.files?.PostFile[0]?.path
-    if (!PostfileLocalpath) throw new ApiError(422, 'No file uploaded')
-
+    let PostfileLocalpath;
+    const PostFile= req.files?.PostFile
+    if(PostFile){
+        PostfileLocalpath = req.files?.PostFile[0]?.path
+    }
+    if (!PostfileLocalpath && !content) throw new ApiError(422, 'File or content is required to post')
+    
     const PostfileURL = await uploadOnCloudinary(PostfileLocalpath)
     //console.log("Post File URL",PostfileURL)
-
-    if (!PostfileURL) {
+    console.log("hello",PostfileURL)
+    if (!PostfileURL && PostfileLocalpath) {
         throw new ApiError(503, 'Post could not be uploaded at the moment')
     }
     const publishedPost = await Post.create({
-        file: PostfileURL?.url,
+        file: PostfileURL?.url || '',
         owner: req.user._id,
-        content: content
+        content: content,
+        format: PostfileURL.format || ''
     }
     )
 

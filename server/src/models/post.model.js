@@ -4,8 +4,9 @@ const postSchema = new mongoose.Schema(
     {
     file:{
         type:String, //Video comes from cloudinary and saved as url
-        required:true,
-
+    },
+    format:{
+        type:String, 
     },
     content:{
         type:String, 

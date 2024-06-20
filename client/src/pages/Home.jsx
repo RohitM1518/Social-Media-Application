@@ -1,6 +1,7 @@
 import React from 'react';
-
+import { useSelector } from 'react-redux';
 const Home = () => {
+  const user = useSelector(state => state?.user?.currentUser)
   return (
     <div className="min-h-screen bg-white text-black font-mono w-full flex justify-center">
       <main className="p-4">
@@ -18,12 +19,12 @@ const Home = () => {
             <li>Like and Comment on Posts</li>
           </ul>
         </section>
-        <section>
+        {!user && <section>
           <h2 className="text-2xl text-center">Get Started</h2>
           <p className="mt-2 text-center">
             <a href="/signup" className="underline">Sign Up</a> or <a href="/signin" className="underline">Log In</a> to start using the platform.
           </p>
-        </section>
+        </section>}
       </main>
     </div>
   );

@@ -13,14 +13,14 @@ const SignIn = () => {
     const [error, setError] = useState("");
     const { register, handleSubmit, formState: { errors } } = useForm();
     const dispatch = useDispatch()
-
+    const backendURL = import.meta.env.VITE_BACKEND_URL
 
     const login = async (data, event) => {
         event.preventDefault();
         dispatch(loginStart())
         setError("");
         try {
-            const userData = await axios.post("http://localhost:8000/api/v1/users/login", data);
+            const userData = await axios.post(`${backendURL}/user/login`, data);
             sessionStorage.setItem('refreshToken', userData.data.data.refreshToken)
             dispatch(loginSuccess(userData.data.data))
             navigate("/")
@@ -54,8 +54,8 @@ const SignIn = () => {
                     <div className='space-y-5'>
                         <Input
                             label="Username"
-                            placeholder="Enter Username or Email"
-                            {...register("usernameOrEmail", {
+                            placeholder="Enter Username "
+                            {...register("username", {
 
                                 validate: {
                                     matchPattern: (value) => /^[^\s]+$/.test(value) || "Feild should not contain Spaces",
