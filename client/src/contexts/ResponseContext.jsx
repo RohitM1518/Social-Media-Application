@@ -9,7 +9,7 @@ export const useResponseContext = ()=>{
 }
 
 export const ResponseContextProvider=({children})=>{
-    const [response, setResponse] = useState(null)
+    const [response, setResponse] = useState('')
     return <ResposeContext.Provider value={{response,setResponse}}>
         {children}
     </ResposeContext.Provider>

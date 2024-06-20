@@ -25,7 +25,7 @@ const Header = () => {
             const temp = [
                 { name: 'Home', link: '/' },
                 { name: 'Posts', link: '/posts' },
-                { name: 'Profile', link: '/profile' },
+                { name: 'Profile', link: `/profile/${user._id}` },
             ];
             setLinkItems(temp)
         }

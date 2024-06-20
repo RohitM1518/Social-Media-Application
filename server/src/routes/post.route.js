@@ -18,6 +18,6 @@ router.route("/:postid").get(getPostById).patch(verifyJWT, upload.fields([
     maxCount:1
 }
 ]),updatePost).delete(verifyJWT,deletePost)
-router.route("/user-posts/:userId").get(getAllPostsByUserID)
+router.route("/user/:userId").get(getAllPostsByUserID)
 
 export default router;

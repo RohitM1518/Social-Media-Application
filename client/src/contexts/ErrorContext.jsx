@@ -9,7 +9,7 @@ export const useErrorContext = ()=>{
 }
 
 export const ErrorContextProvider=({children})=>{
-    const [error, setError] = useState(null)
+    const [error, setError] = useState('')
     return <ErrorContext.Provider value={{error,setError}}>
         {children}
     </ErrorContext.Provider>

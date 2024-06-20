@@ -135,6 +135,7 @@ const updatePost = asyncHandler(async (req, res) => {
 
 })
 
+
 const deletePost = asyncHandler(async (req, res) => {
     const { postid } = req.params
     if (!postid) throw new ApiError(400, "Post id is required")
