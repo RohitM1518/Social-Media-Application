@@ -10,7 +10,7 @@ const Home = () => {
             Connect with friends and the world around you.
           </p>
         </section>
-        <section className="mb-8">
+        <section className="mb-8 flex justify-center gap-8 items-center">
           <h2 className="text-2xl">Features</h2>
           <ul className="list-disc list-inside mt-2">
             <li>User Registration and Login</li>
@@ -19,9 +19,9 @@ const Home = () => {
           </ul>
         </section>
         <section>
-          <h2 className="text-2xl">Get Started</h2>
-          <p className="mt-2">
-            <a href="/signup" className="underline">Sign Up</a> or <a href="/login" className="underline">Log In</a> to start using the platform.
+          <h2 className="text-2xl text-center">Get Started</h2>
+          <p className="mt-2 text-center">
+            <a href="/signup" className="underline">Sign Up</a> or <a href="/signin" className="underline">Log In</a> to start using the platform.
           </p>
         </section>
       </main>

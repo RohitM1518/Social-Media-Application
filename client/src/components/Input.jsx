@@ -16,7 +16,7 @@ const Input = React.forwardRef(function Input({
     return (
         <div className='w-full '>
             {/* if label exists then we display label tag */}
-            {label && <label className='inline-block pl-1 mb-1 font-semibold text-white' htmlFor={id}>
+            {label && <label className='inline-block pl-1 mb-1 font-semibold text-black' htmlFor={id}>
                 {label}
             </label>
             }

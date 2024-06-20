@@ -38,33 +38,27 @@ const SignUp = () => {
         }
     }
     return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex justify-center">
             <div className={`mx-auto w-full max-w-lg bg-custom-gray-2 rounded-xl p-10 border border-black/10`}>
                 <div className="mb-2 flex justify-center">
                     <span className="inline-block w-full max-w-[100px]">
                         <Logo width="100%" textColor='text-black' />
                     </span>
                 </div>
-                <h2 className="text-center text-2xl font-bold leading-tight text-white">Sign up to create account</h2>
-                <p className="mt-2 text-center text-base text-white/60">
+                <h2 className="text-center text-2xl font-bold leading-tight text-black">Sign up to create account</h2>
+                <p className="mt-2 text-center text-base text-black">
                     Already have an account?&nbsp;
                     <Link
-                        to="/login"
-                        className="font-medium text-primary transition-all duration-200 hover:underline"
+                        to="/signin"
+                        className="font-medium text-primary italic transition-all duration-200 hover:underline"
                     >
-                        Log In
+                        Sign In
                     </Link>
                 </p>
                 {error && <p className='text-red-500 text-center'>{error}</p>}
                 <form onSubmit={handleSubmit(create)}>
                     <div className='space-y-5'>
-                        <Input
-                            label="Full Name:"
-                            placeholder="Enter your full name"
-                            {...register("fullname", {
-                                required: true,
-                            })}
-                        />
+    
                         <Input
                             label="Username:"
                             placeholder="Enter Username"
@@ -105,7 +99,7 @@ const SignUp = () => {
                                 required: true,
                             })}
                         />
-                        <Button text="Sign up" style='text-white' type='submit'/>
+                        <Button style='w-full bg-black text-white'> Sign Up</Button>
                     </div>
                 </form>
             </div>

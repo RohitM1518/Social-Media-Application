@@ -7,6 +7,7 @@ import { Provider } from 'react-redux'
 import store from './redux/store.js'
 import { AuthLayout } from './components/index.js'
 import {SignUp,SignIn,Home} from './pages/index.js'
+import { UserContextProvider } from './contexts/userContext.jsx'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 

@@ -14,28 +14,6 @@ const SignIn = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const dispatch = useDispatch()
 
-    const signInWithGoogle =async()=>{
-        signInWithPopup(auth,provider)
-        .then((result)=>{
-            console.log(result)
-            dispatch(loginStart())
-            axios.post('http://localhost:8000/api/v1/users/googleAuth',
-            {
-                fullname: result.user.displayName,
-                email:result.user.email,
-                avatar:result.user.photoURL,
-            })
-            .then((res)=>{
-                sessionStorage.setItem("refreshToken",res.data.data.refreshToken)
-                dispatch(loginSuccess(res.data.data)
-                )})
-            navigate("/")
-        })
-        .catch((error)=>{
-            dispatch(loginFailure())
-            throw error
-        })
-    }
 
     const login = async (data, event) => {
         event.preventDefault();
@@ -54,28 +32,28 @@ const SignIn = () => {
     };
 
     return (
-        <div className="flex items-center justify-center h-screen">
+        <div className="flex">
             <div className={`mx-auto w-full max-w-lg bg-custom-gray-2 rounded-xl p-10 border border-black/10`}>
                 <div className="mb-2 flex justify-center">
                     <span className="inline-block w-full max-w-[100px]">
                         <Logo width="100%" textColor='text-black' />
                     </span>
                 </div>
-                <h2 className="text-center text-2xl font-bold leading-tight text-white">Sign up to create an account</h2>
-                <p className="mt-2 text-center text-base text-white/60">
-                    Already have an account?&nbsp;
+                <h2 className="text-center text-2xl font-bold leading-tight text-black">Sign up to create an account</h2>
+                <p className="mt-2 text-center text-base text-black">
+                    Don't have an account?&nbsp;
                     <Link
-                        to="/login"
-                        className="font-medium text-primary transition-all duration-200 hover:underline"
+                        to="/signup"
+                        className="font-medium text-black italic transition-all duration-200 hover:underline"
                     >
-                        Log In
+                        Sign Up
                     </Link>
                 </p>
                 {error && <p className='text-red-500 text-center'>{error}</p>}
                 <form onSubmit={handleSubmit(login)}>
                     <div className='space-y-5'>
                         <Input
-                            label="Username or Email:"
+                            label="Username"
                             placeholder="Enter Username or Email"
                             {...register("usernameOrEmail", {
 
@@ -93,13 +71,9 @@ const SignIn = () => {
                                 required: "Password is required",
                             })}
                         />
-                        <h1 className='text-white font-bold text-center'>OR</h1>
-                        <div onClick={signInWithGoogle}>
-                        <Button text={'Continue with Google'} imgPath={googleLogo} />
-                        </div>
 
                         {errors.password && <p className='text-red-500 text-center'>{errors.password?.message}</p>}
-                        <Button text="Login" type="submit" style='text-white' />
+                        <Button style='w-full bg-black text-white'> Sign Up</Button>
                     </div>
                 </form>
             </div>

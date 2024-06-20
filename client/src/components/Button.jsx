@@ -1,7 +1,7 @@
 import React from 'react'
 import {useNavigate } from 'react-router-dom'
 
-export const Button = ({children,url,className=''}) => {
+export const Button = ({children,url,style=''}) => {
     const navigate = useNavigate();
     const clickHandle=()=>{
         navigate(url);
@@ -9,7 +9,7 @@ export const Button = ({children,url,className=''}) => {
   return (
     <div className='m-2 mt-5'>
         <button 
-        className={`bg-black text-white p-2 rounded-md ${className} font-mono transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300`}
+        className={`${style?`${style}`:'bg-black text-white'}  p-2 rounded-md font-mono transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300`}
         onClick={clickHandle}
         >{children}</button>
     </div>

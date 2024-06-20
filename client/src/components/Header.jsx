@@ -3,13 +3,23 @@ import { NavLink } from 'react-router-dom';
 // import r1 from '../assets/r1.png'
 import Logo from './Logo'
 import {Button}  from '.';
+import { useSelector } from 'react-redux';
+import { UserContextProvider, useUserContext } from '../contexts/userContext';
 
 const Header = () => {
-    const linkItems = [
-        { name: 'Home', link: '/' },
-        { name: 'Posts', link: '/posts' },
-        { name: 'Profile', link: '/profile' },
-    ];
+    const {user} = useUserContext()
+    let linkItems=[]
+    useEffect(()=>{
+        if(user){
+            linkItems = [
+                { name: 'Home', link: '/' },
+                { name: 'Posts', link: '/posts' },
+                { name: 'Profile', link: '/profile' },
+            ];
+            console.log(linkItems)
+        }
+    },[user])
+    
 
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     
@@ -36,7 +46,7 @@ const Header = () => {
     }, [mobileMenuRef]);
     return (
         <div className='fixed w-full bg-white shadow-md z-10'>
-            <div className=' mx-auto flex justify-between items-center px-4'>
+            <div className=' container mx-auto flex justify-between items-center px-4 max-lg:py-4'>
                 <div className=' flex items-baseline justify-between w-full'>
                     <div className=''>
                         <Logo />
@@ -54,10 +64,10 @@ const Header = () => {
                             </div>
                         ))}
                     </div>
-                    <div className='flex'>
-                        <Button url='/signin'>Sign In</Button>
+                    {!user && <div className='flex max-lg:hidden'>
+                        <Button url='/signin' style='bg-white text-black border-black border'>Sign In</Button>
                         <Button url='/signup'>Sign Up</Button>
-                    </div>
+                    </div>}
                 </div>
                 {/* Display the mobile menu button on smaller screens */}
                 <div className='lg:hidden'>
@@ -73,7 +83,7 @@ const Header = () => {
                                 <li key={item.name}>
                                     <NavLink
                                         to={item.link}
-                                        className='text-black opacity-50 hover:text-emerald-600 transition duration-300'
+                                        className='text-black font-mono opacity-50 hover:text-emerald-600 transition duration-300'
                                        // activeClassName='text-emerald-600 opacity-95'
                                         onClick={toggleMobileMenu}
                                     >
@@ -81,7 +91,12 @@ const Header = () => {
                                     </NavLink>
                                 </li>
                             ))}
+                            <div className='flex'>
+                        <Button url='/signin' style='bg-white text-black border-black border'>Sign In</Button>
+                        <Button url='/signup'>Sign Up</Button>
+                    </div>
                         </ul>
+                        
                     </div>
                 )}
             </div>
