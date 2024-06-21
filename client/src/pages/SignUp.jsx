@@ -6,6 +6,7 @@ import { Link,useNavigate } from 'react-router-dom'
 import {useDispatch} from 'react-redux'
 import { loginFailure, loginStart, loginSuccess } from '../redux/useSlice.js'
 import axios from 'axios'
+import { errorParser } from '../utils/errorParser.js'
 
 const SignUp = () => {
     const [error, setError] = useState("")
@@ -25,17 +26,17 @@ const SignUp = () => {
                 setError("Password and Confirm Password do not match.")
                 return;
             }
-            const formData = new FormData();
-            formData.append("username", data.username);
-            formData.append("email", data.email);
-            formData.append("password", data.password);
+            // const formData = new FormData();
+            // formData.append("username", data.username);
+            // formData.append("email", data.email);
+            // formData.append("password", data.password);
 
-            const res = await axios.post(`${backendURL}/users/register`,formData)
+            const res = await axios.post(`${backendURL}/user/register`,{email:data.email,username:data.username,password:data.password})
             sessionStorage.setItem('refreshToken',res.data.data.refreshToken)
             dispatch(loginSuccess(res.data.data))
             navigate("/")
         } catch (error) {
-            setError(error.message)
+            setError(errorParser(error))
             dispatch(loginFailure())
         }
     }
@@ -101,7 +102,7 @@ const SignUp = () => {
                                 required: true,
                             })}
                         />
-                        <div onClick={create}>
+                        <div>
                         <Button style='w-full bg-black text-white'> Sign Up</Button>
                         </div>
                     </div>

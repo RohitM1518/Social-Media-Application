@@ -25,7 +25,6 @@ const SignIn = () => {
             navigate("/")
 
         } catch (error) {
-
             setError(errorParser(error));
         }
     };

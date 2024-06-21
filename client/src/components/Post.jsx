@@ -134,7 +134,7 @@ const Post = ({ post, isUserPost = false }) => {
     <div className="card shadow-xl p-2 font-mono">
       <div className="card-body">
         <div className="flex justify-between">
-          <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
+          <h2 className="card-title text-black hover:cursor-pointer" onClick={()=>navigate(`/profile/${post?.owner[0]?._id || post?.owner?._id}`)}>{post?.owner[0]?.username || post?.owner?.username}</h2>
           {!isUserPost && <h6>{format(post.createdAt)}</h6>}
           {isUserPost && (
             <div className="flex">

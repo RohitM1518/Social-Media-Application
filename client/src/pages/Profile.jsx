@@ -81,6 +81,16 @@ const Profile = () => {
                 if(id==currentUser._id){
                     setUser(currentUser)
                 }
+                else{
+                    const res = await axios.get(`${backendURL}/user/${id}`, {
+                        withCredentials: true,
+                        headers: {
+                            'Authorization': `Bearer ${accessToken}`
+                        }
+                    })
+                    console.log(res.data.data)
+                    setUser(res.data.data)
+                }
                 // console.log(user)
                 const res = await axios.get(`${backendURL}/post/user/${id}`, {
                     withCredentials: true,
@@ -90,6 +100,7 @@ const Profile = () => {
                 })
                 console.log("Data ",res.data.data.posts)
                 setPosts(res.data.data.posts)
+                
             } catch (error) {
                 setError(errorParser(error))
                 console.log(error)
@@ -115,7 +126,7 @@ const Profile = () => {
                     </div>
                 }
                 <div className=' flex'>
-                {!isChangePassword && <div onClick={()=>setIsChangePassword(true)}>
+                {!isChangePassword && id == currentUser._id && <div onClick={()=>setIsChangePassword(true)}>
                 <Button style=' bg-white text-black border'>Change Password</Button>
                 </div>}
                 {isChangePassword && <div onClick={changePassword}>
@@ -126,16 +137,16 @@ const Profile = () => {
                 </div>}
                 </div>
                 </div>
-                <div className='max-w-50'>
+                {id == currentUser._id && <div className='max-w-50'>
                 <NewPost />
-                </div>
+                </div>}
                 
             </div>
         }
         <div className=' flex justify-center mt-8 mb-3'>
             <ul className=' flex gap-5 items-center'>
-                <li className= {`${type=='myposts'?' font-bold text-lg':''} hover:cursor-pointer`} onClick={handleMyPosts}>{id == currentUser._id?'My':'User'} Posts</li>
-                {id == currentUser._id?<li className= {`${type=='likedposts'?' font-bold text-lg':''} hover:cursor-pointer`} onClick={handleLikedPosts}>Liked Posts</li>:null}
+                <li className= {`${type=='myposts'?' font-bold text-lg':''} hover:cursor-pointer hover:font-bold`} onClick={handleMyPosts}>{id == currentUser._id?'My':'User'} Posts</li>
+                {id == currentUser._id?<li className= {`${type=='likedposts'?' font-bold text-lg':''} hover:cursor-pointer hover:font-bold`} onClick={handleLikedPosts}>Liked Posts</li>:null}
             </ul>
         </div>
         <div className=' h-[1px] bg-black'></div>
