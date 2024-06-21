@@ -11,6 +11,7 @@ import { FaRegHeart } from "react-icons/fa6";
 import { useErrorContext } from '../contexts/ErrorContext';
 import { useResponseContext } from '../contexts/ResponseContext';
 import { errorParser } from '../utils/errorParser';
+import { format } from 'timeago.js'
 
 
 const Post = ({ post }) => {
@@ -18,21 +19,21 @@ const Post = ({ post }) => {
     const accessToken = useSelector(state => state.user?.accessToken)
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState('')
-    const {setError}= useErrorContext()
-    const {setResponse}=useResponseContext()
-    const [logic,setLogic]=useState('')
-    const [isLiked,setIsLiked]=useState(false)
+    const { setError } = useErrorContext()
+    const { setResponse } = useResponseContext()
+    const [logic, setLogic] = useState('')
+    const [isLiked, setIsLiked] = useState(false)
     const postComment = async () => {
         try {
             setLogic('rohit')
-            const res = await axios.post(`${backendURL}/comment/${post._id}`,{content:newComment}, {
+            const res = await axios.post(`${backendURL}/comment/${post?._id}`, { content: newComment }, {
                 withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
                 }
             })
             setResponse(res.data.message)
-            console.log(res.data.data)            
+            console.log(res.data.data)
         } catch (error) {
             setError(errorParser(error))
             console.log(error)
@@ -40,8 +41,8 @@ const Post = ({ post }) => {
     }
     const toggleLike = async () => {
         try {
-            
-            const res = await axios.post(`${backendURL}/like/${post._id}`,{}, {
+
+            const res = await axios.post(`${backendURL}/like/${post._id}`, {}, {
                 withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
@@ -49,7 +50,7 @@ const Post = ({ post }) => {
             })
             setIsLiked(prev => !prev)
             // setResponse(res.data.message)
-            console.log(res.data.data)            
+            console.log(res.data.data)
         } catch (error) {
             setError(errorParser(error))
             console.log(error)
@@ -73,6 +74,7 @@ const Post = ({ post }) => {
                 })
                 // setResponse(res.data.message)
                 console.log(res1.data.data)
+                setIsLiked(res1.data.data)
                 setComments(res.data.data)
             } catch (error) {
                 setError(errorParser(error))
@@ -80,8 +82,8 @@ const Post = ({ post }) => {
             }
         }
         getComments()
-    }, [post,setLogic])
-   
+    }, [post, setLogic])
+
     const [isExpanded, setIsExpanded] = useState(false);
     const toggleExpand = () => setIsExpanded(!isExpanded);
     const [showComment, setShowComment] = useState(false)
@@ -100,7 +102,10 @@ const Post = ({ post }) => {
         return (
             <div className="card shadow-xl p-2 font-mono">
                 <div className="card-body">
-                    <h2 className="card-title text-black">{post?.owner[0].username}</h2>
+                    <div className=' flex justify-between'>
+                        <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
+                        <h6>{format(post.createdAt)}</h6>
+                    </div>
                     <p className=' opacity-70'>
                         {truncateContent(post.content, isExpanded)}
                         {post.content.length > 100 && (
@@ -117,11 +122,11 @@ const Post = ({ post }) => {
                         className="w-full h-64 object-cover"
                     />
                     <div className=' flex items-baseline justify-between px-3'>
-                        {isLiked &&<div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FcLike style={{ width: 25, height: 25}} />
+                        {isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
+                            <FcLike style={{ width: 25, height: 25 }} />
                         </div>}
-                        {!isLiked &&<div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FaRegHeart style={{ width: 25, height: 25}} />
+                        {!isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
+                            <FaRegHeart style={{ width: 25, height: 25 }} />
                         </div>}
                         {!showComment && <div className=' hover:cursor-pointer'>
                             <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
@@ -131,13 +136,13 @@ const Post = ({ post }) => {
                                 <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
                             </div>}
                     </div>
-                        {
-                            showComment && <Comments comments={comments} />
-                        }
+                    {
+                        showComment && <Comments comments={comments} />
+                    }
                     {showComment && <div className='flex items-baseline justify-between'>
-                        <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e=>setNewComment(e.target.value)}/>
+                        <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
                         <div onClick={postComment}>
-                        <Button>Send</Button>
+                            <Button>Send</Button>
                         </div>
                     </div>}
                 </div>
@@ -147,8 +152,10 @@ const Post = ({ post }) => {
         return (
             <div className="card shadow-xl p-3 font-mono">
                 <div className="card-body">
-                    <h2 className="card-title text-black">{post?.owner[0].username}</h2>
-                    <p className=' opacity-70'>
+                    <div className=' flex justify-between'>
+                        <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
+                        <h6>{format(post.createdAt)}</h6>
+                    </div>                    <p className=' opacity-70'>
                         {truncateContent(post.content, isExpanded)}
                         {post.content.length > 100 && (
                             <button onClick={toggleExpand} className="text-blue-500 ml-2">
@@ -163,36 +170,38 @@ const Post = ({ post }) => {
                     className="w-full h-64 object-cover"
                 />
                 <div className=' flex items-baseline justify-between p-3'>
-                {isLiked &&<div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FcLike style={{ width: 25, height: 25}} />
-                        </div>}
-                        {!isLiked &&<div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FaRegHeart style={{ width: 25, height: 25}} />
-                        </div>}
-                        {!showComment && <div className=' hover:cursor-pointer'>
-                            <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
-                        </div>}
-                        {showComment &&
-                            <div className='hover:cursor-pointer'>
-                                <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
-                            </div>}
-                    </div>
-                        {
-                            showComment && <Comments comments={comments} />
-                        }
-                    {showComment && <div className=' flex items-baseline justify-between'>
-                        <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e=>setNewComment(e.target.value)}/>
-                        <div onClick={postComment}>
-                        <Button>Send</Button>
-                        </div>
+                    {isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
+                        <FcLike style={{ width: 25, height: 25 }} />
                     </div>}
+                    {!isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
+                        <FaRegHeart style={{ width: 25, height: 25 }} />
+                    </div>}
+                    {!showComment && <div className=' hover:cursor-pointer'>
+                        <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
+                    </div>}
+                    {showComment &&
+                        <div className='hover:cursor-pointer'>
+                            <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
+                        </div>}
+                </div>
+                {
+                    showComment && <Comments comments={comments} />
+                }
+                {showComment && <div className=' flex items-baseline justify-between'>
+                    <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
+                    <div onClick={postComment}>
+                        <Button>Send</Button>
+                    </div>
+                </div>}
             </div>
         );
     } else {
         return <div className="card shadow-xl p-2 font-mono">
             <div className="card-body">
-                <h2 className="card-title text-black">{post?.owner[0].username}</h2>
-                <p className=' opacity-70'>
+                <div className=' flex justify-between'>
+                    <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
+                    <h6>{format(post.createdAt)}</h6>
+                </div>                <p className=' opacity-70'>
                     {truncateContent(post.content, isExpanded)}
                     {post.content.length > 100 && (
                         <button onClick={toggleExpand} className="text-blue-500 ml-2">
@@ -201,29 +210,29 @@ const Post = ({ post }) => {
                     )}
                 </p>
                 <div className=' flex items-baseline justify-between p-3 '>
-                {isLiked &&<div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FcLike style={{ width: 25, height: 25}} />
-                        </div>}
-                        {!isLiked &&<div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FaRegHeart style={{ width: 25, height: 25}} />
-                        </div>}
-                        {!showComment && <div className=' hover:cursor-pointer'>
-                            <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
-                        </div>}
-                        {showComment &&
-                            <div className=' hover:cursor-pointer'>
-                                <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
-                            </div>}
-                    </div>
-                        {
-                            showComment && <Comments comments={comments} />
-                        }
-                    {showComment && <div className=' flex items-baseline justify-between'>
-                        <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e=>setNewComment(e.target.value)}/>
-                        <div onClick={postComment}>
-                        <Button>Send</Button>
-                        </div>
+                    {isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
+                        <FcLike style={{ width: 25, height: 25 }} />
                     </div>}
+                    {!isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
+                        <FaRegHeart style={{ width: 25, height: 25 }} />
+                    </div>}
+                    {!showComment && <div className=' hover:cursor-pointer'>
+                        <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
+                    </div>}
+                    {showComment &&
+                        <div className=' hover:cursor-pointer'>
+                            <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
+                        </div>}
+                </div>
+                {
+                    showComment && <Comments comments={comments} />
+                }
+                {showComment && <div className=' flex items-baseline justify-between'>
+                    <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
+                    <div onClick={postComment}>
+                        <Button>Send</Button>
+                    </div>
+                </div>}
             </div>
         </div> // Handle other formats if needed
     }

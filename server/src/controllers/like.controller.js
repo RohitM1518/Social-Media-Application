@@ -33,41 +33,36 @@ const getLikedPosts = asyncHandler(async (req, res) => {
     if(limit < 1) throw new ApiError(400, "Invalid limit")
 
     const skip = (page - 1) * limit
-    const pipeline=[
+    const pipeline = [
         {
-            $match:{
-                likedBy:req.user._id
+            $match: {
+                likedBy: new mongoose.Types.ObjectId(req.user._id)
             }
         },
         {
-            $sort:{
-                createdAt:-1
-            }
+            $skip: skip
         },
         {
-            $skip:skip
+            $limit: limit
         },
         {
-            $limit:limit
-        },
-        {
-            $lookup:{
-                from:"posts",
-                localField:"post",
-                foreignField:"_id",
-                as:"post",
-                pipeline:[
+            $lookup: {
+                from: "posts",
+                localField: "post",
+                foreignField: "_id",
+                as: "post",
+                pipeline: [
                     {
-                        $lookup:{
-                            from:"users",
-                            localField:"owner",
-                            foreignField:"_id",
-                            as:"owner",
-                            pipeline:[
+                        $lookup: {
+                            from: "users",
+                            localField: "owner",
+                            foreignField: "_id",
+                            as: "owner",
+                            pipeline: [
                                 {
-                                    $project:{
-                                        username:1,
-                                        fullname:1,
+                                    $project: {
+                                        username: 1,
+                                        email: 1
                                     }
                                 }
                             ]
@@ -77,21 +72,38 @@ const getLikedPosts = asyncHandler(async (req, res) => {
             }
         },
         {
-            $unwind:"$post"
+            $unwind: "$post"
         },
         {
-            $project:{
-                _id:0,
-                post:{
-                    _id:1,
-                    content:1,
-                    file:1,
-                    createdAt:1,
-                    likedBy:1
+            $unwind: "$post.owner"
+        },
+        {
+            $sort: {
+                'post.createdAt': -1
+            }
+        },
+        {
+            $project: {
+                _id: 0,
+                _id: "$post._id",
+                content: "$post.content",
+                file: "$post.file",
+                format: "$post.format",
+                createdAt: "$post.createdAt",
+                likedBy: "$post.likedBy",
+                owner: {
+                    username: "$post.owner.username",
+                    email: "$post.owner.email"
                 }
             }
         }
-]
+    ];
+    
+    
+    
+    
+    
+    
 
 const likedposts = await Like.aggregate(pipeline)
 if(!likedposts) throw new ApiError(500, "Something went wrong while fetching liked posts")

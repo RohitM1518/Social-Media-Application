@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken"
 
 
 const getAllPosts = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, sortBy = "createdAt", sortType = "asc" } = req.query
+    const { page = 1, limit = 10, sortBy = "createdAt", sortType = "desc" } = req.query
     let pipeline = [
         {
             $sort: {
@@ -155,7 +155,7 @@ const getAllPostsByUserID = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid user id")
     }
 
-    const posts = await Post.find({ owner: userId }).populate('owner', 'username email avatar')
+    const posts = await Post.find({ owner: new mongoose.Types.ObjectId(userId) }).populate('owner', 'username email').sort({ createdAt: -1 });
 
     if (!posts) {
         throw new ApiError(500, "No posts found")
