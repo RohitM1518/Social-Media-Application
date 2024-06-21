@@ -1,241 +1,203 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactPlayer from 'react-player';
-import { FcLike } from "react-icons/fc";
-import { FaCommentAlt } from "react-icons/fa";
+import { FcLike } from 'react-icons/fc';
+import { FaCommentAlt } from 'react-icons/fa';
 import { Button } from './Button';
-import { MdCancelPresentation } from "react-icons/md";
+import { MdCancelPresentation, MdOutlineCancel } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import Comments from './Comments';
-import { FaRegHeart } from "react-icons/fa6";
+import { FaRegHeart } from 'react-icons/fa';
 import { useErrorContext } from '../contexts/ErrorContext';
 import { useResponseContext } from '../contexts/ResponseContext';
 import { errorParser } from '../utils/errorParser';
-import { format } from 'timeago.js'
+import { format } from 'timeago.js';
+import { BsThreeDotsVertical } from 'react-icons/bs';
+import NewPost from './NewPost';
 
+const Post = ({ post, isUserPost = false }) => {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const accessToken = useSelector(state => state.user?.accessToken);
+  const { setError } = useErrorContext();
+  const { setResponse } = useResponseContext();
 
-const Post = ({ post }) => {
-    const backendURL = import.meta.env.VITE_BACKEND_URL
-    const accessToken = useSelector(state => state.user?.accessToken)
-    const [comments, setComments] = useState([])
-    const [newComment, setNewComment] = useState('')
-    const { setError } = useErrorContext()
-    const { setResponse } = useResponseContext()
-    const [logic, setLogic] = useState('')
-    const [isLiked, setIsLiked] = useState(false)
-    const postComment = async () => {
-        try {
-            setLogic('rohit')
-            const res = await axios.post(`${backendURL}/comment/${post?._id}`, { content: newComment }, {
-                withCredentials: true,
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            })
-            setResponse(res.data.message)
-            console.log(res.data.data)
-        } catch (error) {
-            setError(errorParser(error))
-            console.log(error)
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [logic, setLogic] = useState('');
+  const [isLiked, setIsLiked] = useState(false);
+  const [toggleMenu, setToggleMenu] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showComment, setShowComment] = useState(false);
+
+  const postComment = async () => {
+    try {
+      const res = await axios.post(
+        `${backendURL}/comment/${post?._id}`,
+        { content: newComment },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
         }
+      );
+      setResponse(res.data.message);
+      console.log(res.data.data);
+    } catch (error) {
+      setError(errorParser(error));
+      console.log(error);
     }
-    const toggleLike = async () => {
-        try {
+  };
 
-            const res = await axios.post(`${backendURL}/like/${post._id}`, {}, {
-                withCredentials: true,
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            })
-            setIsLiked(prev => !prev)
-            // setResponse(res.data.message)
-            console.log(res.data.data)
-        } catch (error) {
-            setError(errorParser(error))
-            console.log(error)
+  const toggleLike = async () => {
+    try {
+      const res = await axios.post(
+        `${backendURL}/like/${post._id}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
         }
+      );
+      setIsLiked(prev => !prev);
+      console.log(res.data.data);
+    } catch (error) {
+      setError(errorParser(error));
+      console.log(error);
     }
-    useEffect(() => {
-        const getComments = async () => {
-            try {
-                const res = await axios.get(`${backendURL}/comment/${post._id}`, {
-                    withCredentials: true,
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                })
-                // setResponse(res.data.message)
-                const res1 = await axios.get(`${backendURL}/like/${post._id}`, {
-                    withCredentials: true,
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
-                })
-                // setResponse(res.data.message)
-                console.log(res1.data.data)
-                setIsLiked(res1.data.data)
-                setComments(res.data.data)
-            } catch (error) {
-                setError(errorParser(error))
-                console.log(error)
-            }
-        }
-        getComments()
-    }, [post, setLogic])
+  };
 
-    const [isExpanded, setIsExpanded] = useState(false);
-    const toggleExpand = () => setIsExpanded(!isExpanded);
-    const [showComment, setShowComment] = useState(false)
-    const truncateContent = (content, isExpanded) => {
-        if (isExpanded) {
-            return content;
-        }
-        const maxLength = 100; // Adjust as needed for two or three lines
-        if (content.length > maxLength) {
-            return `${content.substring(0, maxLength)}...`;
-        }
-        return content;
+  useEffect(() => {
+    const getComments = async () => {
+      try {
+        const commentsRes = await axios.get(`${backendURL}/comment/${post._id}`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        const likesRes = await axios.get(`${backendURL}/like/${post._id}`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+        setIsLiked(likesRes.data.data);
+        setComments(commentsRes.data.data);
+      } catch (error) {
+        setError(errorParser(error));
+        console.log(error);
+      }
     };
+    getComments();
+  }, [post, setLogic]);
 
-    if (post.format === 'mp4') {
-        return (
-            <div className="card shadow-xl p-2 font-mono">
-                <div className="card-body">
-                    <div className=' flex justify-between'>
-                        <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
-                        <h6>{format(post.createdAt)}</h6>
-                    </div>
-                    <p className=' opacity-70'>
-                        {truncateContent(post.content, isExpanded)}
-                        {post.content.length > 100 && (
-                            <button onClick={toggleExpand} className="text-blue-500 ml-2">
-                                {isExpanded ? 'Show less' : 'Read more'}
-                            </button>
-                        )}
-                    </p>
-                    <ReactPlayer
-                        url={post.file}
-                        controls
-                        width="100%"
-                        height="auto"
-                        className="w-full h-64 object-cover"
-                    />
-                    <div className=' flex items-baseline justify-between px-3'>
-                        {isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
-                            <FcLike style={{ width: 25, height: 25 }} />
-                        </div>}
-                        {!isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
-                            <FaRegHeart style={{ width: 25, height: 25 }} />
-                        </div>}
-                        {!showComment && <div className=' hover:cursor-pointer'>
-                            <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
-                        </div>}
-                        {showComment &&
-                            <div className=' hover:cursor-pointer'>
-                                <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
-                            </div>}
-                    </div>
-                    {
-                        showComment && <Comments comments={comments} />
-                    }
-                    {showComment && <div className='flex items-baseline justify-between'>
-                        <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
-                        <div onClick={postComment}>
-                            <Button>Send</Button>
-                        </div>
-                    </div>}
-                </div>
-            </div>
-        );
-    } else if (post.format === 'png' || post.format === 'jpg') {
-        return (
-            <div className="card shadow-xl p-3 font-mono">
-                <div className="card-body">
-                    <div className=' flex justify-between'>
-                        <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
-                        <h6>{format(post.createdAt)}</h6>
-                    </div>                    <p className=' opacity-70'>
-                        {truncateContent(post.content, isExpanded)}
-                        {post.content.length > 100 && (
-                            <button onClick={toggleExpand} className="text-blue-500 ml-2">
-                                {isExpanded ? 'Show less' : 'Read more'}
-                            </button>
-                        )}
-                    </p>
-                </div>
-                <img
-                    src={post.file}
-                    alt="post"
-                    className="w-full h-64 object-cover"
-                />
-                <div className=' flex items-baseline justify-between p-3'>
-                    {isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FcLike style={{ width: 25, height: 25 }} />
-                    </div>}
-                    {!isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FaRegHeart style={{ width: 25, height: 25 }} />
-                    </div>}
-                    {!showComment && <div className=' hover:cursor-pointer'>
-                        <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
-                    </div>}
-                    {showComment &&
-                        <div className='hover:cursor-pointer'>
-                            <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
-                        </div>}
-                </div>
-                {
-                    showComment && <Comments comments={comments} />
-                }
-                {showComment && <div className=' flex items-baseline justify-between'>
-                    <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
-                    <div onClick={postComment}>
-                        <Button>Send</Button>
-                    </div>
-                </div>}
-            </div>
-        );
-    } else {
-        return <div className="card shadow-xl p-2 font-mono">
-            <div className="card-body">
-                <div className=' flex justify-between'>
-                    <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
-                    <h6>{format(post.createdAt)}</h6>
-                </div>                <p className=' opacity-70'>
-                    {truncateContent(post.content, isExpanded)}
-                    {post.content.length > 100 && (
-                        <button onClick={toggleExpand} className="text-blue-500 ml-2">
-                            {isExpanded ? 'Show less' : 'Read more'}
-                        </button>
-                    )}
-                </p>
-                <div className=' flex items-baseline justify-between p-3 '>
-                    {isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FcLike style={{ width: 25, height: 25 }} />
-                    </div>}
-                    {!isLiked && <div onClick={toggleLike} className=' hover:cursor-pointer'>
-                        <FaRegHeart style={{ width: 25, height: 25 }} />
-                    </div>}
-                    {!showComment && <div className=' hover:cursor-pointer'>
-                        <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
-                    </div>}
-                    {showComment &&
-                        <div className=' hover:cursor-pointer'>
-                            <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
-                        </div>}
-                </div>
-                {
-                    showComment && <Comments comments={comments} />
-                }
-                {showComment && <div className=' flex items-baseline justify-between'>
-                    <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
-                    <div onClick={postComment}>
-                        <Button>Send</Button>
-                    </div>
-                </div>}
-            </div>
-        </div> // Handle other formats if needed
+  const toggleExpand = () => setIsExpanded(!isExpanded);
+
+  const truncateContent = (content, isExpanded) => {
+    const maxLength = 100;
+    if (isExpanded || content.length <= maxLength) {
+      return content;
     }
+    return `${content.substring(0, maxLength)}...`;
+  };
+
+  return (
+    <div className="card shadow-xl p-2 font-mono">
+      <div className="card-body">
+        <div className="flex justify-between">
+          <h2 className="card-title text-black">{post?.owner[0]?.username || post?.owner?.username}</h2>
+          {!isUserPost && <h6>{format(post.createdAt)}</h6>}
+          {isUserPost && (
+            <div className="flex">
+              <div onClick={() => setToggleMenu(prev => !prev)} className="flex">
+                {toggleMenu && (
+                  <ul className="flex flex-col gap-2 shadow-md p-1 justify-center items-center">
+                    <li className="hover:bg-green-300 rounded-sm px-1 hover:cursor-pointer" onClick={() => setIsUpdate(prev => !prev)}>
+                      {isUpdate ? 'Cancel Update' : 'Update Post'}
+                    </li>
+                    <li className="hover:bg-red-300 rounded-sm hover:cursor-pointer">Delete Post</li>
+                  </ul>
+                )}
+                {!toggleMenu && !isUpdate && (
+                  <div className="hover:cursor-pointer">
+                    <BsThreeDotsVertical style={{ width: 25, height: 25 }} />
+                  </div>
+                )}
+                {toggleMenu &&(
+                  <div className="hover:cursor-pointer">
+                    <MdOutlineCancel style={{ width: 25, height: 25 }} />
+                  </div>
+                )}
+                {isUpdate &&(
+                  <div className="hover:cursor-pointer" onClick={()=>setIsUpdate(false)}>
+                    <MdOutlineCancel style={{ width: 25, height: 25 }} />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {!isUpdate && (
+          <div>
+            <p className="opacity-70">
+              {truncateContent(post.content, isExpanded)}
+              {post.content.length > 100 && (
+                <button onClick={toggleExpand} className="text-blue-500 ml-2">
+                  {isExpanded ? 'Show less' : 'Read more'}
+                </button>
+              )}
+            </p>
+            {post.format === 'mp4' && (
+              <ReactPlayer url={post.file} controls width="100%" height="auto" className="w-full h-64 object-cover" />
+            )}
+            {(post.format === 'png' || post.format === 'jpg') && (
+              <img src={post.file} alt="post" className="w-full h-64 object-cover" />
+            )}
+            <div className="flex items-center justify-between px-3 mt-2">
+              {isLiked ? (
+                <div onClick={toggleLike} className="hover:cursor-pointer">
+                  <FcLike style={{ width: 25, height: 25 }} />
+                </div>
+              ) : (
+                <div onClick={toggleLike} className="hover:cursor-pointer">
+                  <FaRegHeart style={{ width: 25, height: 25 }} />
+                </div>
+              )}
+              {!showComment && (
+                <div className="hover:cursor-pointer">
+                  <FaCommentAlt style={{ width: 20, height: 20 }} onClick={() => setShowComment(true)} />
+                </div>
+              )}
+              {showComment && (
+                <div className="hover:cursor-pointer">
+                  <MdCancelPresentation style={{ width: 20, height: 20 }} onClick={() => setShowComment(false)} />
+                </div>
+              )}
+            </div>
+            {showComment && <Comments comments={comments} />}
+            {showComment && (
+              <div className="flex items-baseline justify-between">
+                <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
+                <div onClick={postComment}>
+                  <Button>Send</Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+        {isUpdate && (
+          <div>
+            <NewPost heading="Update" cont={post?.content} postid={post._id}/>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default Post;
