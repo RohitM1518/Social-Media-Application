@@ -75,7 +75,7 @@ const Header = () => {
         <div className='fixed w-full bg-white shadow-md z-10'>
             <div className=' container mx-auto flex justify-between items-center px-4 max-lg:py-4'>
                 <div className=' flex items-baseline justify-between w-full'>
-                    <div className=''>
+                    <div className=' sm:flex sm:justify-center sm:items-center'>
                         <Logo />
                     </div>
                     <div className={`hidden lg:flex space-x-6 py-4 ${isMobileMenuOpen ? 'hidden' : ''}`}>

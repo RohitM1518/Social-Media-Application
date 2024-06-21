@@ -41,11 +41,12 @@ const NewPost = ({ heading = 'New', cont = "",postid}) => {
             navigate("/")
             setTimeout(()=>{
                 navigate("/posts")
-            },1000)
+                setResponse(res.data.message)
+            },1)
             
             // window.location.reload();
 
-            setResponse(res.data.message)
+           
             console.log("Success")
         } catch (error) {
             const errorMSg = errorParser(error)

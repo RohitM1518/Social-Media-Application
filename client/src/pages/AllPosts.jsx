@@ -38,8 +38,8 @@ const AllPosts = () => {
     )
   }
   return (
-    <div className='grid grid-cols-4 gap-4 max-sm:flex max-sm:flex-col-reverse'>
-      <div className='col-span-1  p-4 max-lg:hidden'></div>
+    <div className='grid grid-cols-4 gap-4 max-lg:flex max-lg:flex-col-reverse max-lg:grid-cols-2'>
+      <div className='col-span-1  p-4 max-lg:hidden flex-shrink'></div>
       <div className='col-span-2 p-4 justify-center'>
       <Posts posts={posts}/>
       </div>

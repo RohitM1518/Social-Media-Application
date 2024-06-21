@@ -72,7 +72,7 @@ const SignIn = () => {
                         />
 
                         {errors.password && <p className='text-red-500 text-center'>{errors.password?.message}</p>}
-                        <Button style='w-full bg-black text-white'> Sign Up</Button>
+                        <Button style='w-full bg-black text-white'> Sign In</Button>
                     </div>
                 </form>
             </div>

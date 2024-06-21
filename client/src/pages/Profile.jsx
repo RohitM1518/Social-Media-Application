@@ -5,8 +5,9 @@ import { useErrorContext } from '../contexts/ErrorContext'
 import { useUserContext } from '../contexts/UserContext'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
-import { NewPost } from '../components'
+import { Button, NewPost } from '../components'
 import Posts from '../components/Posts'
+import { useResponseContext } from '../contexts/ResponseContext'
 
 const Profile = () => {
     const {id} = useParams()
@@ -14,6 +15,10 @@ const Profile = () => {
     const [type,setType]=useState('myposts')
     const {setError}= useErrorContext()
     const {user,setUser}=useUserContext()
+    const {setResponse}=useResponseContext()
+    const [isChangePassword,setIsChangePassword]=useState(false)
+    const [newPassword,setNewPassword]=useState('')
+    const [oldPassword,setOldPassword]=useState('')
     const currentUser = useSelector(state => state?.user?.currentUser)
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const accessToken = useSelector(state=>state?.user?.accessToken)
@@ -49,6 +54,25 @@ const Profile = () => {
                 console.log(error)
         }
     }
+    const changePassword=async()=>{
+        try {
+            const confirmDelete = window.confirm('Are you sure you want to change the password?');
+            if (!confirmDelete){
+                return
+            } 
+            const res = await axios.patch(`${backendURL}/user/`,{oldPassword:oldPassword,newPassword:newPassword}, {
+                withCredentials: true,
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            })
+            setResponse(res.data.message)
+            console.log("Data ",res.data)
+        } catch (error) {
+            setError(errorParser(error))
+            console.log(error)
+        }
+    }
     useEffect(() => {
         const getUserPosts = async () => {
             try {
@@ -80,6 +104,27 @@ const Profile = () => {
                 <div>
                 <h1 className='text-5xl font-mono font-bold'>{user.username}</h1>
                 <h4>{user.email}</h4>
+                {
+                    isChangePassword && <div className=' flex flex-col gap-2 mt-4'>
+                        <div>
+                        <input type="password" placeholder="Old Password" onChange={(e)=>setOldPassword(e.target.value)} className="input input-bordered w-full max-w-xs bg-white" />
+                        </div>
+                        <div>
+                        <input type="password" placeholder="New Password" onChange={(e)=>setNewPassword(e.target.value)} className="input input-bordered w-full max-w-xs bg-white" />
+                        </div>
+                    </div>
+                }
+                <div className=' flex'>
+                {!isChangePassword && <div onClick={()=>setIsChangePassword(true)}>
+                <Button style=' bg-white text-black border'>Change Password</Button>
+                </div>}
+                {isChangePassword && <div onClick={changePassword}>
+                <Button style=''>Change Password</Button>
+                </div>}
+                {isChangePassword && <div onClick={()=>setIsChangePassword(false)}>
+                <Button style=' bg-white text-black border'>Cancel</Button>
+                </div>}
+                </div>
                 </div>
                 <div className='max-w-50'>
                 <NewPost />

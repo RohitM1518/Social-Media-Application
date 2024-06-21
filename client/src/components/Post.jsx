@@ -14,13 +14,14 @@ import { errorParser } from '../utils/errorParser';
 import { format } from 'timeago.js';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import NewPost from './NewPost';
+import { useNavigate } from 'react-router-dom';
 
 const Post = ({ post, isUserPost = false }) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const accessToken = useSelector(state => state.user?.accessToken);
   const { setError } = useErrorContext();
   const { setResponse } = useResponseContext();
-
+  const navigate = useNavigate()
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [logic, setLogic] = useState('');
@@ -104,6 +105,30 @@ const Post = ({ post, isUserPost = false }) => {
     }
     return `${content.substring(0, maxLength)}...`;
   };
+  const deletePost=async()=>{
+    try {
+        const confirmDelete = window.confirm('Are you sure you want to delete this post?');
+        if (!confirmDelete){
+            return
+        } 
+        const res = await axios.delete(`${backendURL}/post/${post._id}`, {
+            withCredentials: true,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+        navigate("/")
+        setTimeout(()=>{
+            navigate("/posts")
+            setResponse(res.data.message)
+        },10)
+        
+        console.log("Data ",res.data)
+    } catch (error) {
+        setError(errorParser(error))
+        console.log(error)
+    }
+}
 
   return (
     <div className="card shadow-xl p-2 font-mono">
@@ -119,7 +144,7 @@ const Post = ({ post, isUserPost = false }) => {
                     <li className="hover:bg-green-300 rounded-sm px-1 hover:cursor-pointer" onClick={() => setIsUpdate(prev => !prev)}>
                       {isUpdate ? 'Cancel Update' : 'Update Post'}
                     </li>
-                    <li className="hover:bg-red-300 rounded-sm hover:cursor-pointer">Delete Post</li>
+                    <li className="hover:bg-red-300 rounded-sm hover:cursor-pointer" onClick={deletePost}>Delete Post</li>
                   </ul>
                 )}
                 {!toggleMenu && !isUpdate && (
