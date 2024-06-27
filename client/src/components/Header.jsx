@@ -130,7 +130,7 @@ const Header = () => {
                         <Button url='/signup'>Sign Up</Button>
                     </div>}
                     {
-                        user && <div>
+                        user && <div onClick={handleLogout}>
                             <Button style=' bg-white text-black border-black border'>Logout</Button>
                         </div>
                     }

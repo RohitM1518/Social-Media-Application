@@ -4,7 +4,11 @@ import SlideShow from '../components/SlideShow';
 import Slide1 from '../assets/slide1.jpeg'
 import Slide2 from '../assets/slide2.jpeg'
 import Slide3 from '../assets/slide3.jpeg'
+import { useNavigate } from 'react-router-dom';
+import {Button} from '../components/Button'
+
 const Home = () => {
+  const navigate = useNavigate()
   const images = [
     Slide1,
     Slide2,
@@ -23,8 +27,17 @@ const Home = () => {
        
         {!user && <section>
           <h2 className="text-2xl text-center">Get Started</h2>
-          <p className="mt-2 text-center">
-            <a href="/signup" className="underline">Sign Up</a> or <a href="/signin" className="underline">Log In</a> to start using the platform.
+          <p className="mt-2 text-center flex justify-center items-center flex-col">
+            <div className=' flex justify-center items-center'>
+              <div onClick={()=>{navigate('/signup')}} className="hover:cursor-pointer">
+            <Button style=' hover:bg-white hover:text-black bg-black text-white lg:hover:border lg:hover:border-black'>Sign Up</Button>
+            </div>
+            or
+            <div onClick={()=>navigate('/signin')} className="hover:cursor-pointer">
+            <Button style=' bg-white text-black border border-black lg:hover:bg-black lg:hover:text-white'>Sign In</Button>
+            </div>
+            </div>
+            <div>To start using the platform</div>
           </p>
         </section>}
         <section className="mb-8 flex justify-center gap-8 items-center">

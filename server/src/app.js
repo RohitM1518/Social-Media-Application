@@ -1,31 +1,49 @@
-import  express from "express";
+import express from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser"
-
+import cookieParser from "cookie-parser";
+import userRoute from './routes/user.route.js';
+import commentRoute from './routes/comment.route.js';
+import likeRoute from './routes/like.route.js';
+import postRoute from './routes/post.route.js';
 
 const app = express();
+const allowedOrigins = [
+    'https://fomofeed.netlify.app',
+    'https://main--fomofeed.netlify.app',
+    'http://localhost:5173'
+];
+// CORS setup
 app.use(cors({
-    origin:'http://localhost:5173',
-    credentials:true
-}
-)) //use method used whenever we use middleware, configuration
-app.use(express.json({
-    limit:"16kb"
-}
-))//This means I am accepting the json data to store the data in DB
-app.use(express.urlencoded({extended:true,limit:"16kb"}))//This means I am accepting the url encoded with data to store the data in DB
-app.use(express.static("public"))//This is to store some data which can be accessed by anyone such as pdf,photo
-//public folder is already created so we are passing public
-app.use(cookieParser())
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true
+}));
+// Body parsing middleware
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
-import userRoute from './routes/user.route.js'
-import commentRoute from './routes/comment.route.js'
-import likeRoute from './routes/like.route.js'
-import postRoute from './routes/post.route.js'
+// Serve static files from public directory
+app.use(express.static("public"));
 
-app.use('/user',userRoute)
-app.use('/comment',commentRoute)
-app.use('/like',likeRoute)
-app.use('/post',postRoute)
+// Parse cookies
+app.use(cookieParser());
 
-export {app}
+// Routes
+app.use('/user', userRoute);
+app.use('/comment', commentRoute);
+app.use('/like', likeRoute);
+app.use('/post', postRoute);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
+export { app };
