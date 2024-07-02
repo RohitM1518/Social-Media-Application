@@ -15,6 +15,7 @@ import { format } from 'timeago.js';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import NewPost from './NewPost';
 import { useNavigate } from 'react-router-dom';
+import { useLoadingContext } from '../contexts/LoadingContext';
 
 const Post = ({ post, isUserPost = false }) => {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -30,9 +31,10 @@ const Post = ({ post, isUserPost = false }) => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showComment, setShowComment] = useState(false);
-
+  const {setIsLoading}=useLoadingContext()
   const postComment = async () => {
     try {
+      setIsLoading(true)
       const res = await axios.post(
         `${backendURL}/comment/${post?._id}`,
         { content: newComment },
@@ -45,9 +47,17 @@ const Post = ({ post, isUserPost = false }) => {
       );
       setResponse(res.data.message);
       console.log(res.data.data);
+      // navigate('/')
+      // setTimeout(()=>{
+      //   navigate('/posts')
+      // },100)
+      setNewComment('')
     } catch (error) {
       setError(errorParser(error));
       console.log(error);
+    }
+    finally{
+      setIsLoading(false)
     }
   };
 
@@ -107,6 +117,7 @@ const Post = ({ post, isUserPost = false }) => {
   };
   const deletePost=async()=>{
     try {
+      setIsLoading(true)
         const confirmDelete = window.confirm('Are you sure you want to delete this post?');
         if (!confirmDelete){
             return
@@ -127,6 +138,9 @@ const Post = ({ post, isUserPost = false }) => {
     } catch (error) {
         setError(errorParser(error))
         console.log(error)
+    }
+    finally{
+      setIsLoading(false)
     }
 }
 
@@ -207,7 +221,7 @@ const Post = ({ post, isUserPost = false }) => {
             {showComment && <Comments comments={comments} />}
             {showComment && (
               <div className="flex items-baseline justify-between">
-                <input type="text" placeholder="Comment" className="input input-bordered w-full" onChange={e => setNewComment(e.target.value)} />
+                <input type="text" placeholder="Comment" className="input input-bordered w-full" value={newComment} onChange={e => setNewComment(e.target.value)} />
                 <div onClick={postComment}>
                   <Button>Send</Button>
                 </div>

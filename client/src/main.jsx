@@ -9,7 +9,8 @@ import { AuthLayout } from './components/index.js'
 import {SignUp,SignIn,Home, AllPosts, Profile} from './pages/index.js'
 import { ResponseContextProvider } from './contexts/ResponseContext.jsx'
 import { ErrorContextProvider } from './contexts/ErrorContext.jsx'
-import { UserContextProvider } from './contexts/UserContext.jsx'
+import { UserContextProvider } from './contexts/userContext.jsx'
+import { LoadingContextProvider } from './contexts/LoadingContext.jsx'
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -61,7 +62,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ResponseContextProvider>
       <ErrorContextProvider>
       <UserContextProvider>
+        <LoadingContextProvider>
     <RouterProvider router={router} />
+    </LoadingContextProvider>
     </UserContextProvider>
     </ErrorContextProvider>
     </ResponseContextProvider>

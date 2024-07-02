@@ -6,15 +6,17 @@ import { NewPost } from '../components'
 import { useErrorContext } from '../contexts/ErrorContext'
 import { useResponseContext } from '../contexts/ResponseContext'
 import { errorParser } from '../utils/errorParser'
+import { useLoadingContext } from '../contexts/LoadingContext'
 const AllPosts = () => {
   const accessToken = useSelector(state=>state.user.accessToken)
   const backendURL = import.meta.env.VITE_BACKEND_URL
   const [posts,setPosts]= useState([])
   const {setError} = useErrorContext()
-  const {setResponse}=useResponseContext()
+  const {setIsLoading}=useLoadingContext()
     useEffect(()=>{
       async function getPosts(){
         try {
+          setIsLoading(true)
             const res = await axios.get(`${backendURL}/post/`,{
               withCredentials:true,
               headers:{
@@ -28,13 +30,16 @@ const AllPosts = () => {
             console.log(error)
             setError(errorParser(error))
         }
+        finally{
+          setIsLoading(false)
+        }
     }
     getPosts()
   } ,[])
 
   if(!posts){
     return (
-      <div>Loading...</div>
+      <div>Loading</div>
     )
   }
   return (

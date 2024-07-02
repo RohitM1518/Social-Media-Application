@@ -9,6 +9,7 @@ import { logout } from '../redux/useSlice';
 import { errorParser } from '../utils/errorParser';
 import { useResponseContext } from '../contexts/ResponseContext';
 import { useErrorContext } from '../contexts/ErrorContext';
+import { useLoadingContext } from '../contexts/LoadingContext';
 
 
 const Header = () => {
@@ -20,6 +21,7 @@ const Header = () => {
     const {setError}= useErrorContext()
     const [linkItems,setLinkItems]=useState([])
     const dispatch = useDispatch()
+    const {setIsLoading}=useLoadingContext()
     useEffect(()=>{
         if(user){
             const temp = [
@@ -44,6 +46,7 @@ const Header = () => {
 
     const handleLogout =async()=>{
         try {
+            setIsLoading(true)
             const res=await axios.delete(`${backendURL}/user/`,{
                 withCredentials:true,
                 headers:{
@@ -56,6 +59,9 @@ const Header = () => {
             const errorMsg = errorParser(error)
             console.log(error)
             setError(errorMsg)
+        }
+        finally{
+            setIsLoading(false)
         }
     }
     useEffect(() => {

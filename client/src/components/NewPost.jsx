@@ -6,6 +6,7 @@ import { useErrorContext } from '../contexts/ErrorContext';
 import { useResponseContext } from '../contexts/ResponseContext';
 import { errorParser } from '../utils/errorParser';
 import { useNavigate } from 'react-router-dom';
+import { useLoadingContext } from '../contexts/LoadingContext';
 
 const NewPost = ({ heading = 'New', cont = "",postid}) => {
     const navigate = useNavigate()
@@ -16,8 +17,10 @@ const NewPost = ({ heading = 'New', cont = "",postid}) => {
     const { setResponse } = useResponseContext()
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const accessToken = useSelector(state => state.user?.accessToken)
+    const {setIsLoading}=useLoadingContext()
     const createPost = async () => {
         try {
+            setIsLoading(true)
             const formdata = new FormData()
             formdata.append('PostFile', selectedFile)
             formdata.append('content', content)
@@ -52,6 +55,9 @@ const NewPost = ({ heading = 'New', cont = "",postid}) => {
             const errorMSg = errorParser(error)
             setError(errorMSg)
             console.log(error)
+        }
+        finally{
+            setIsLoading(false)
         }
     }
     return (

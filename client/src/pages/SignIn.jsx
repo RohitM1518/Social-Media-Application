@@ -7,17 +7,20 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { loginStart, loginSuccess } from '../redux/useSlice.js';
 import { errorParser } from '../utils/errorParser.js';
+import { useLoadingContext } from '../contexts/LoadingContext.jsx';
 const SignIn = () => {
     const navigate = useNavigate()
     const [error, setError] = useState("");
     const { register, handleSubmit, formState: { errors } } = useForm();
     const dispatch = useDispatch()
     const backendURL = import.meta.env.VITE_BACKEND_URL
+    const {setIsLoading}=useLoadingContext()
 
     const login = async (data, event) => {
         event.preventDefault();
         dispatch(loginStart())
         setError("");
+        setIsLoading(true)
         try {
             const userData = await axios.post(`${backendURL}/user/login`, data);
             sessionStorage.setItem('refreshToken', userData.data.data.refreshToken)
@@ -26,6 +29,9 @@ const SignIn = () => {
 
         } catch (error) {
             setError(errorParser(error));
+        }
+        finally{
+            setIsLoading(false)
         }
     };
 

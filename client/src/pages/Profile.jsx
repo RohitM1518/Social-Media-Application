@@ -2,12 +2,13 @@ import React, { useEffect ,useState} from 'react'
 import { useParams } from 'react-router-dom'
 import { errorParser } from '../utils/errorParser'
 import { useErrorContext } from '../contexts/ErrorContext'
-import { useUserContext } from '../contexts/UserContext'
+import { useUserContext } from '../contexts/userContext'
 import axios from 'axios'
 import { useSelector } from 'react-redux'
 import { Button, NewPost } from '../components'
 import Posts from '../components/Posts'
 import { useResponseContext } from '../contexts/ResponseContext'
+import { useLoadingContext } from '../contexts/LoadingContext'
 
 const Profile = () => {
     const {id} = useParams()
@@ -22,6 +23,8 @@ const Profile = () => {
     const currentUser = useSelector(state => state?.user?.currentUser)
     const backendURL = import.meta.env.VITE_BACKEND_URL
     const accessToken = useSelector(state=>state?.user?.accessToken)
+    const {setIsLoading}=useLoadingContext()
+
     const handleMyPosts=async()=>{
         setType('myposts')
         try {
@@ -56,6 +59,7 @@ const Profile = () => {
     }
     const changePassword=async()=>{
         try {
+            setIsLoading(true)
             const confirmDelete = window.confirm('Are you sure you want to change the password?');
             if (!confirmDelete){
                 return
@@ -71,6 +75,9 @@ const Profile = () => {
         } catch (error) {
             setError(errorParser(error))
             console.log(error)
+        }
+        finally{
+            setIsLoading(false)
         }
     }
     useEffect(() => {

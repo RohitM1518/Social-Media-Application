@@ -5,9 +5,12 @@ import { Snackbar } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useResponseContext } from './contexts/ResponseContext'
 import { useErrorContext } from './contexts/ErrorContext'
+import {LinearProgress} from '@mui/material'
+import { useLoadingContext } from './contexts/LoadingContext'
 function App() {
   const { response, setResponse } = useResponseContext()
   const {error,setError}=useErrorContext()
+  const {isLoading}=useLoadingContext()
   if(error){
     setTimeout(()=>{
       setError('')
@@ -32,8 +35,12 @@ function App() {
           <span>{error}</span>
         </div>
       </div>}
+      {isLoading && <div className='pt-[70px] max-lg:pt-[65px]'>
+      <LinearProgress />
+      </div>}
       <div className='w-full h-36'>
       </div>
+      
       <div className=' container min-h-screen items-center'>
         <Outlet />
       </div>

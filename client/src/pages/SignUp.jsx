@@ -7,6 +7,7 @@ import {useDispatch} from 'react-redux'
 import { loginFailure, loginStart, loginSuccess } from '../redux/useSlice.js'
 import axios from 'axios'
 import { errorParser } from '../utils/errorParser.js'
+import { useLoadingContext } from '../contexts/LoadingContext.jsx'
 
 const SignUp = () => {
     const [error, setError] = useState("")
@@ -14,7 +15,7 @@ const SignUp = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const backendURL = import.meta.env.VITE_BACKEND_URL
-
+    const {setIsLoading}=useLoadingContext()
 
     const create = async (data,event) => {
         event.preventDefault();
@@ -30,7 +31,7 @@ const SignUp = () => {
             // formData.append("username", data.username);
             // formData.append("email", data.email);
             // formData.append("password", data.password);
-
+            setIsLoading(true)
             const res = await axios.post(`${backendURL}/user/register`,{email:data.email,username:data.username,password:data.password})
             sessionStorage.setItem('refreshToken',res.data.data.refreshToken)
             dispatch(loginSuccess(res.data.data))
@@ -38,6 +39,9 @@ const SignUp = () => {
         } catch (error) {
             setError(errorParser(error))
             dispatch(loginFailure())
+        }
+        finally{
+            setIsLoading(false)
         }
     }
     return (
