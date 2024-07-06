@@ -31,7 +31,7 @@ function App() {
         </div>
       </div>}
       {error && <div className="toast toast-bottom toast-start z-20">
-        <div className="alert bg-red-400">
+        <div className="alert bg-red-600 text-white">
           <span>{error}</span>
         </div>
       </div>}
